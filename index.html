@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sonoplasty Helper</title>
+    <!-- Load Vue.js from a CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        font-family: Avenir;
+      }
+      @font-face {
+        font-family: Avenir;
+        src: url("Avenir.otf");
+      }
+      .audio-list {
+        display: flex;
+        flex-wrap: wrap;
+        width: 100%;
+        justify-content: space-around;
+      }
+      .audio-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 10px;
+        border: 3px solid #c6c6c6;
+        border-radius: 3px;
+        gap: 5px;
+        width: 48%;
+      }
+      .audio-item .play-btn {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background-color: #c6c6c6;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        margin-right: 10px;
+        font-size: 18px;
+      }
+      .audio-item .play-btn.playing {
+        background-color: #dc3545;
+      }
+      input[type="range"] {
+        width: 150px;
+        margin-left: 10px;
+        background-color: #89e366;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div class="audio-list">
+        <div v-for="(audio, index) in audios" :key="index" class="audio-item">
+          <b>{{ audio.title }}</b>
+          <i style="white-space: pre-line; color: #717171">{{audio.cue}}</i>
+          <div
+            class="play-btn"
+            @click="toggleAudio(index)"
+            :style="{backgroundColor: audio.playing ? '#89e366' : '#c6c6c6'}"
+          >
+            <span style="font-size: 32px" v-if="!audio.playing">▶️</span>
+            <span style="font-size: 32px" v-else>⏹️</span>
+          </div>
+          <input
+            type="range"
+            min="0"
+            max="100"
+            v-model="audio.volume"
+            @input="changeVolume(index)"
+          />
+          <!-- Audio element -->
+          <audio
+            :src="audio.src"
+            ref="audioPlayers"
+            :id="'audio' + index"
+            preload="auto"
+            @ended="finishPlaying(index)"
+          ></audio>
+        </div>
+      </div>
+    </div>
+
+    <!-- Font Awesome for play and stop icons -->
+
+    <script>
+      // Vue app
+      new Vue({
+        el: "#app",
+        data: {
+          audios: [
+            {
+              title: "Passarinhos - Emicida",
+              cue: `
+- NICOLE: "Começou numa noite como essa..."
+- DUDA: "E foi aí que tudo começou..."
+`,
+              src: "1.mp3",
+              playing: false,
+              volume: 100,
+            },
+            {
+              title: "Suspense Fada",
+              src: "2.mp3",
+              playing: false,
+              volume: 100,
+              cue: `
+- DUDA: "ah mas você também, MANHÊ..."
+- NICOLE: "Tinha uma luz que piscou, eu vi! Não tinha? Vou ficar olhando."
+`,
+            },
+            {
+              title: "Chegada Brinquedos",
+              src: "3.mp3",
+              playing: false,
+              volume: 100,
+              cue: `
+DUDA: "Dona fada, você é tipo fada dos dentes?"
+GABI: "Não, isso é outro departamento!"
+`,
+            },
+            {
+              title: "Choque Brinquedos",
+              src: "4.1.mp3",
+              playing: false,
+              volume: 100,
+              cue: `
+BAILARINA (BIANCA): "Obrigada, querida! E como estão as brincadeiras de vocês?"
+DUDA: "Nós paramos de brincar faz um tempinho já"
+`,
+            },
+            {
+              title: "Saída Emoção",
+              src: "5.mp3",
+              playing: false,
+              volume: 100,
+              cue: `
+EMOÇÃO (BEATRIZ): "Nunca é tarde pra sonhar, meninas! Lembrem-se disso!"
+RAZÃO (LAURA): "Nós vamos sempre estar com vocês, somos formadas disso! E agora nossa saída grandiosa!"
+`,
+            },
+            {
+              title: "Interrupção Música",
+              src: "5.0.mp3",
+              playing: false,
+              volume: 100,
+              cue: `
+- NICOLE: "Começou numa noite como essa..."
+- DUDA: "E foi aí que tudo começou..."
+`,
+            },
+            {
+              title: "Família Addams",
+              src: "6.mp3",
+              playing: false,
+              volume: 100,
+              cue: `
+TOCAR desde o começo da cena
+AUMENTAR quando vai pregar a peça
+TERMINAR quando elas saem de cena
+`,
+            },
+            {
+              title: "Briga Bicho papão",
+              src: "7.mp3",
+              playing: false,
+              volume: 100,
+              cue: `
+Meninas com medo de aranhas de plástico
+Meninas brigando e falando de chulé
+`,
+            },
+            {
+              title: "Efeito Magia",
+              src: "8.mp3",
+              playing: false,
+              volume: 100,
+              cue: `
+BICHO PAPÃO (ALVARO): "E vocês acham que isso vai me colocar medo?"
+FADA (GABI): "Eu sou a fada madrinhas delas! Larga agora!
+`,
+            },
+            {
+              title: "Leitura Patinhas",
+              src: "9.mp3",
+              playing: false,
+              volume: 100,
+              cue: `
+DUDA: Pra quem já viu de tudo..
+NICOLE: Até que parece uma boa ideia..
+`,
+            },
+            {
+              title: "Música Final",
+              src: "10.mp3",
+              playing: false,
+              volume: 100,
+              cue: `
+COMEÇAR a partir da parte que elas se arrumam para janela, APÓS:
+"UM HUMANO .. Meu Deus que horror..."
+`,
+            },
+          ],
+        },
+        methods: {
+          toggleAudio(index) {
+            // Stop all other audios
+            this.audios.forEach((audio, i) => {
+              if (i !== index && audio.playing) {
+                audio.playing = false;
+                this.$refs.audioPlayers[i].pause(); // Pause other audios
+                this.$refs.audioPlayers[i].currentTime = 0;
+              }
+            });
+
+            // Toggle play/pause for the selected audio
+            const audio = this.audios[index];
+            if (audio.playing) {
+              this.$refs.audioPlayers[index].pause();
+              this.$refs.audioPlayers[index].currentTime = 0;
+            } else {
+              this.$refs.audioPlayers[index].play();
+            }
+            audio.playing = !audio.playing;
+          },
+          changeVolume(index) {
+            const audio = this.audios[index];
+            this.$refs.audioPlayers[index].volume = audio.volume / 100;
+          },
+          finishPlaying(index) {
+            const audio = this.audios[index];
+            this.$refs.audioPlayers[index].currentTime = 0;
+            audio.playing = false;
+          },
+        },
+      });
+    </script>
+  </body>
+</html>
